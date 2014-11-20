@@ -11,9 +11,12 @@
             [taoensso.timbre.appenders.rotor :as rotor]
             [selmer.parser :as parser]
             [environ.core :refer [env]]
-            [cronj.core :as cronj]))
+            [cronj.core :as cronj]
+            [angudone.routes.auth :refer [auth-routes]]
+            [angudone.db.schema :as schema]))
 
-(defroutes base-routes
+(defroutes
+  base-routes
   (route/resources "/")
   (route/not-found "Not Found"))
 
@@ -25,21 +28,22 @@
   []
   (timbre/set-config!
    [:appenders :rotor]
-   {:min-level :info
-    :enabled? true
-    :async? false ; should be always false for rotor
-    :max-message-per-msecs nil
+   {:min-level :info,
+    :enabled? true,
+    :async? false,
+    :max-message-per-msecs nil,
     :fn rotor/appender-fn})
-
   (timbre/set-config!
    [:shared-appender-config :rotor]
-   {:path "angudone.log" :max-size (* 512 1024) :backlog 10})
-
+   {:path "angudone.log", :max-size (* 512 1024), :backlog 10})
   (if (env :dev) (parser/cache-off!))
-  ;;start the expired session cleanup job
   (cronj/start! session-manager/cleanup-job)
-  (timbre/info "\n-=[ angudone started successfully"
-               (when (env :dev) "using the development profile") "]=-"))
+  (if-not (schema/initialized?) (schema/create-tables))
+  (timbre/info
+   "
+-=[ angudone started successfully"
+   (when (env :dev) "using the development profile")
+   "]=-"))
 
 (defn destroy
   "destroy will be called when your application
@@ -49,7 +53,6 @@
   (cronj/shutdown! session-manager/cleanup-job)
   (timbre/info "shutdown complete!"))
 
-;; timeout sessions after 30 minutes
 (def session-defaults
   {:timeout (* 60 30)
    :timeout-response (redirect "/")})
@@ -61,15 +64,13 @@
       (update-in [:session] merge session-defaults)
       (assoc-in [:security :anti-forgery] xss-protection?)))
 
-(def app (app-handler
-          ;; add your application routes here
-          [home-routes base-routes]
-          ;; add custom middleware here
-          :middleware (load-middleware)
-          :ring-defaults (mk-defaults false)
-          ;; add access rules here
-          :access-rules []
-          ;; serialize/deserialize the following data formats
-          ;; available formats:
-          ;; :json :json-kw :yaml :yaml-kw :edn :yaml-in-html
-          :formats [:json-kw :edn :transit-json]))
+(def app
+  (app-handler
+   [auth-routes home-routes base-routes]
+   :middleware (load-middleware)
+   :ring-defaults (mk-defaults false)
+   :access-rules []
+   ;; serialize/deserialize the following data formats
+   ;; available formats:
+   ;; :json :json-kw :yaml :yaml-kw :edn :yaml-in-html
+   :formats [:json-kw :edn :transit-json]))
