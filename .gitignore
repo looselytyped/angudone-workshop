@@ -9,4 +9,5 @@ pom.xml
 /.env
 *.log
 site.db.mv.db
+.nrepl*
 
