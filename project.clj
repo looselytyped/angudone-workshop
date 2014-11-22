@@ -31,7 +31,10 @@
   :jvm-opts
   ["-server"]
   :plugins
-  [[lein-ring "0.8.13"] [lein-environ "1.0.0"] [lein-ancient "0.5.5"]]
+  [[lein-ring "0.8.13"]
+   [lein-environ "1.0.0"]
+   [lein-ancient "0.5.5"]
+   [cider/cider-nrepl "0.8.1"]]
   :ring
   {:handler angudone.handler/app,
    :init angudone.handler/init,
