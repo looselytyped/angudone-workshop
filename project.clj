@@ -25,7 +25,9 @@
    [org.clojure/clojure "1.6.0"]
    [environ "1.0.0"]
    [ring-server "0.3.1"]
-   [im.chit/cronj "1.4.2"]]
+   [im.chit/cronj "1.4.2"]
+   [liberator "0.12.2"]
+   [cheshire "5.3.1"]]
   :repl-options
   {:init-ns angudone.repl}
   :jvm-opts
