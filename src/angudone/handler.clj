@@ -2,7 +2,6 @@
   (:require [compojure.core :refer [defroutes]]
             [angudone.routes.home :refer [home-routes]]
             [angudone.middleware :refer [load-middleware]]
-            [angudone.session-manager :as session-manager]
             [noir.response :refer [redirect]]
             [noir.util.middleware :refer [app-handler]]
             [ring.middleware.defaults :refer [site-defaults]]
@@ -12,7 +11,6 @@
             [selmer.parser :as parser]
             [environ.core :refer [env]]
             [cronj.core :as cronj]
-            [angudone.routes.auth :refer [auth-routes]]
             [angudone.db.schema :as schema]))
 
 (defroutes
@@ -37,7 +35,6 @@
    [:shared-appender-config :rotor]
    {:path "angudone.log", :max-size (* 512 1024), :backlog 10})
   (if (env :dev) (parser/cache-off!))
-  (cronj/start! session-manager/cleanup-job)
   (if-not (schema/initialized?) (schema/create-tables))
   (timbre/info
    "
@@ -50,7 +47,6 @@
   shuts down, put any clean up code here"
   []
   (timbre/info "angudone is shutting down...")
-  (cronj/shutdown! session-manager/cleanup-job)
   (timbre/info "shutdown complete!"))
 
 (def session-defaults
@@ -66,7 +62,7 @@
 
 (def app
   (app-handler
-   [auth-routes home-routes base-routes]
+   [home-routes base-routes]
    :middleware (load-middleware)
    :ring-defaults (mk-defaults false)
    :access-rules []
