@@ -12,7 +12,6 @@
             [selmer.parser :as parser]
             [environ.core :refer [env]]
             [cronj.core :as cronj]
-            [angudone.routes.auth :refer [auth-routes]]
             [angudone.db.schema :as schema]))
 
 (defroutes
@@ -66,7 +65,7 @@
 
 (def app
   (app-handler
-   [auth-routes home-routes base-routes]
+   [home-routes base-routes]
    :middleware (load-middleware)
    :ring-defaults (mk-defaults false)
    :access-rules []
