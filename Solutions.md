@@ -185,7 +185,7 @@ If you know your way around Git then you can `git-checkout` individual commits t
 
     That is not to say that `$scope` has no value anymore -- `$scope` allows for many other functions such as `$broadcast`, `$apply` and `$digest`, and if you need those you can still inject `$scope` like we currently do. 
 
-6. **Define out `todos` array** @exercise
+7. **Define out `todos` array** @exercise
 
         var app = angular.module("todosApp", []);
 
@@ -211,7 +211,7 @@ If you know your way around Git then you can `git-checkout` individual commits t
             <h3>{{ todosCtrl.todos }}</h3>
         </div>
 
-6. **Use `ng-repeat` to loop over a collection** @exercise
+8. **Use `ng-repeat` to loop over a collection** @exercise
 
     Now that we have a collection of todos, we can display them in the view. A semantic representation of a list of items would be an unordered list which is what we will use. 
 
@@ -239,9 +239,36 @@ If you know your way around Git then you can `git-checkout` individual commits t
                 <h3>{{ t.text }}</h3>
               </li>
             </ul>
-      </div>
+        </div>
 
     Notice the `track by t.id` that tells Angular to use the `id` property on the current todo.
 
     Be warned though that this key **has to be UNIQUE!**
 
+7. **Use `ng-change` on checkbox to mark todos as done**
+
+    We will first introduce a checkbox with a `ng-model` (so that we can know it's state) for each todo within the `ng-repeat`.
+
+    We then use `ng-change` to invoke a function on the controller to mark the todo as done (that is set a `done` property on the todo to the curent timestamp).
+
+    We also use `ng-checked` to tell Angular what the _initial_ value of the checkbox needs to be. Bear in mind that the `ng-model` that the checkbox *drives* is different from the "initial value" of the checkbox. Try to think of what the value of the checkbox needs to be if one of the todos was already done (in that its `done` property was already set). 
+
+    So when the user checks the box the sequence as Angular manages it is - set the value of the `ng-model` `checked` to `true` or `false`, _then_ invoke `todosCtrl.markDone`, and _then_ interrogate `t.done` to figure out the value of the `checked` attribute on the checkbox.
+
+        <li ng-repeat="t in todosCtrl.todos track by t.id">
+            <h3>
+              <input type="checkbox" ng-model="checked"
+                                     ng-change="todosCtrl.markDone(checked, t)"ng-checked="t.done">
+              {{ t.text }}
+              </h3>
+        </li>
+
+    Of course the user might check a todo, and then uncheck it. In that case we simply delete the `done` property on the todo.
+
+        vm.markDone = function(checked, todo) {
+            if(checked) {
+                todo.done = new Date().getTime();
+            } else {
+                delete todo.done;
+            }
+        };
