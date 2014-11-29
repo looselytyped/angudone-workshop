@@ -210,4 +210,38 @@ If you know your way around Git then you can `git-checkout` individual commits t
         <div ng-controller="TodosCtrl as todosCtrl">
             <h3>{{ todosCtrl.todos }}</h3>
         </div>
+
+6. **Use `ng-repeat` to loop over a collection** @exercise
+
+    Now that we have a collection of todos, we can display them in the view. A semantic representation of a list of items would be an unordered list which is what we will use. 
+
+    We will then leverage one of Angulars most powerful in-built directive -- `ng-repeat`. `ng-repeat` allows us to loop over a collection. We can use it like so 
+
+        <div ng-controller="TodosCtrl as todosCtrl">
+            <ul class="list-unstyled">
+              <li ng-repeat="t in todosCtrl.todos">
+                <h3>{{ t.text }}</h3>
+              </li>
+            </ul>
+        </div>
     
+    You can read `<li ng-repeat="t in todosCtrl.todos">` as "for every variable t in the todos collection on the todosCtrl insert a li element, whose HTML content is the 'text' property on current variable t"
+
+    As you can see `ng-repeat` does a lot! 
+
+    One thing to bear in mind is that the order in which the todos get listed is the same order in which your todos are listed on the `todos` array. Under the covers Angular creates a unique identifier for each `li` that ties it back to the `index` of that item in the array. 
+
+    We can ask Angular to track the items in the list using a key that we define. We can supply a `track by` clause to `ng-repeat` that will help Angular know what key to use, like so 
+
+        <div ng-controller="TodosCtrl as todosCtrl">
+            <ul class="list-unstyled">
+              <li ng-repeat="t in todosCtrl.todos track by t.id">
+                <h3>{{ t.text }}</h3>
+              </li>
+            </ul>
+      </div>
+
+    Notice the `track by t.id` that tells Angular to use the `id` property on the current todo.
+
+    Be warned though that this key **has to be UNIQUE!**
+

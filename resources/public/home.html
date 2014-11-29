@@ -35,7 +35,11 @@
     <div class="starter-template">
       <h1>Angudone</h1>
       <div ng-controller="TodosCtrl as todosCtrl">
-        <h3>{{ todosCtrl.todos }}</h3>
+        <ul class="list-unstyled">
+          <li ng-repeat="t in todosCtrl.todos track by t.id">
+            <h3>{{ t.text }}</h3>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
