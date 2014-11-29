@@ -90,3 +90,98 @@ If you know your way around Git then you can `git-checkout` individual commits t
 
     Bear in mind that all these `ng-models` are being attached to the `$rootScope`, that is they are globally accessible!
 
+6. **Define and use controllers** @discussion
+
+    Controllers
+
+    - Introduce scopes via `$scope`. These inherit prototypally from `$rootScope`
+    - Use Dependency injection to get their dependencies
+
+
+    a. A controller function in AngularJS is simply a JavaScript function and can be defined as so -
+
+        function TodosCtrl($scope) {
+            // set up $scope properties here that are accessible
+            // in the view
+            $scope.description = "This is our first TodosCtrl";
+        }
+
+    You can use this controller in the view with `ng-controller`
+
+        <div class="lead" ng-controller="TodosCtrl">
+            <!--
+                Anything on $scope is visible here just
+                like anything you put on $rootScope is visible
+            -->
+            <span>{{ description }}</span>
+        </div>
+        <!--
+            You CANNOT see anything on a controllers scope
+            if you are outside the scope of the controller.
+            Notice we are outside of the closing div tag
+            so this will be empty (unless $rootScope has a description)
+         -->
+         <span>{{ description }}</span>
+
+    Any function (and controllers are simply functions) in AngularJS can leverage dependency injection to get their dependencies. In this case `$scope` tells Angular that this function has a dependency on a `Scope` object, and that Angular should create a `Scope` object and inject it into the function. The name of the parameter tells Angular what _kind_ of object to "create" and inject into the function. 
+
+    Let us say our function needed to make AJAX calls to the server. To do so it would require the `$http` object, and if we were to change the signature of our controller to be `function TodosCtrl($scope, $http) { }` then the function would have 2 objects within its scope - the newly created `$scope` object, and a `$http` object.
+
+    There are **two** things wrong with this declaration. One, the function, like any function declared like so it is in global scope. Furthermore, I mentioned that the names of the parameters to the function tell Angular what it should create and inject. This works great for development purposes, but even a small sized web project these days sees minification and uglification of the the JavaScript code! Think of what a minifier were to do with parameter names :)
+
+    To avoid these two issues, Angular offers another way to declare "namespaced" controllers.  
+
+    b. The first thing we need to is declare a `module` for our Agnular application. Think of a module as a "namespace" - and all functions, variables, constants, controllers etc live within that namespace. We will use the `module` method that Angular gives us to create one
+
+        // declare a module, and grab a reference to it
+        // Do not forget to pass in the second empty array to the 
+        // module method! 
+        var app = angular.module("TodosApp", []);
+
+        // declare the controller
+        app.controller("TodosCtrl", ["$scope", 
+            function(scope) {
+                $scope.description = "This is our first TodosCtrl";
+            }
+        ]);
+
+    Here, the first argument to the `controller` method is the name of the controller, followed by an array. The **last** item in the array is the definition of the controller. The first to `n-1` items in the array are `String`s that represent the dependencies that the function has. Because these are `String`s these will **not** be minified. Furthermore, now the `TodosCtrl` is tucked away in the `TodosApp` module namespace so it is no longer globally accessible. 
+
+    There is one more step here -- since we are now using the `TodosApp` namespace we need to tell `ng-app` (declared in the view) the name of this namespace, and we do so by changing it to be `<body ng-app="TodosApp">`.
+
+    c. Angular since version 1.5 introduced a "newer" way to use controllers. This is called a "controller as" syntax and is the **preferred** way to use controllers. 
+
+    There are 2 changes here - one is how the controller is defined, and the second is how it is used. 
+
+        // redefining the controller
+        var app = angular.module("TodosApp", []);
+
+        // re-define the controller
+        app.controller("TodosCtrl", ["$scope", 
+            function(scope) {
+                var vm = this;
+                // notice we are using "this" now
+                vm.description = "This is our first TodosCtrl";
+            }
+        ]);
+
+    And the view looks like so
+
+        // changing the view
+        <div class="lead" ng-controller="TodosCtrl as todosCtrl">
+            <!--
+                Now, the TodosCtrl is available to us in the view
+                as "todosCtrl" - we can look up anything tacked on to 
+                the controller itself
+            -->
+            <span>{{ todosCtrl.description }}</span>
+        </div>
+
+    Within the controller we no longer tack anything on the `$scope` object, and in this trite example we have no need to inject `$scope` anymore. We attach all properties and functions directly on the controller object via `this`.
+
+    In the view we then use the new `as` syntax to alias the controller, in our case we will call it `todosCtrl`. We can then use `todosCtrl.` (note the dot) to access anything that we tacked on to the controller object. 
+
+    Please note that this **is** the preferred syntax for doing things in Angular now, although most tutorials and books out there will still use the `$scope`. 
+
+    That is not to say that `$scope` has no value anymore -- `$scope` allows for many other functions such as `$broadcast`, `$apply` and `$digest`, and if you need those you can still inject `$scope` like we currently do. 
+
