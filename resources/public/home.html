@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="css/bootstrap.css">
   <link rel="stylesheet" href="css/screen.css">
   <script src="js/angular.js"></script>
+  <script src="js/angular-messages.js"></script>
   <script src="js/jquery-2.1.1.js"></script>
   <script src="js/bootstrap.js"></script>
   <script src="js/main.js"></script>
@@ -51,11 +52,15 @@
                  name="todoText"
                  required
                  placeholder="I want to ..." />
-          <button ng-click="todosCtrl.addNewTodo(todosCtrl.newTodo)"
+          <button ng-click="todosCtrl.addNewTodo(todosCtrl.newTodo);todosCtrl.resetForm(newTodoForm)"
                   ng-disabled="newTodoForm.$invalid">
             Add
           </button>
         </form>
+        <div ng-messages="newTodoForm.todoText.$error" ng-show="newTodoForm.$dirty && newTodoForm.$invalid">
+          <span ng-message="required">is required</span>
+        </div>
+
       </div>
     </div>
   </div>

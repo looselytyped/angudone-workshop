@@ -302,3 +302,39 @@ If you know your way around Git then you can `git-checkout` individual commits t
 
     Note that we reset the `text` property on the supplied `newTodo` object to `''` - this will erase the text on the `input` on a succesful submission. 
 
+9. **Use `ng-messages` to display error messages to the user** @exercise
+
+    Angular 1.3 introduced a new module called `ngMessages` that makes it easy to display form errors to the user. 
+
+    In order to use this we have to first include the angular-messages.js file in our HTML, and then make `ngMessages` a dependency to **our* application. 
+
+        <!-- in the HTML -->
+        <script src="js/angular-messages.js"></script>
+
+    And in our JavaScript file 
+
+        angular.module("TodosApp", ["ngMessages"])
+
+    Now we can use `ngMessages` functionality within out application. 
+
+    Remember we can reference the form in our HTML by its name. The form object has on itself several properties that we can interrogate. We already used `$invalid`. Others are listed [here](https://docs.angularjs.org/api/ng/type/form.FormController). 
+
+    The form object also maintains an object that you can get to via `formName.$error`. You can _also_ get to any errors attached a specific form element via `formName.controlName.$error`
+
+    This object has as its keys any errors on the form (for e.g. "required" if the form has an input field that is required but is not filled in), and the value is the "failing" control (or `true` if this is the control itself). This is what the `$error` object looks like for `newTodoForm.todoText.$error` 
+
+        {
+            "required": true
+        }
+
+    As you can see the key is `required` and its value is `true` which tells us that this field is required. 
+
+    Let us see how `ng-messages` is used and then figure out how this works. 
+
+        <div ng-messages="newTodoForm.todoText.$error" ng-show="newTodoForm.$dirty && newTodoForm.$invalid">
+          <span ng-message="required">is required</span>
+        </div>
+
+    The `ng-messages` tag asks which `$error` object to look at -- in this case we want the `newTodoForm.todoText.$error` . `ng-messages` simply "switch cases" over the `$error` object and finds the matching `ng-message` and picks the `span` tag that matches that error! It is that `span` tag that is then displayed to the user. 
+
+    Note that we also use `newTodoForm.$dirty` and `newTodoForm.$invalid` to ensure that we are not being too aggressive in displaying errors to the user. 
