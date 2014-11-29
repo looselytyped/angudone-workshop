@@ -26,6 +26,10 @@
         todos.push({ id: ++index, text: newTodo.text });
         newTodo.text = '';
       };
+
+      vm.resetForm = function(form) {
+        form.$setPristine();
+      };
     }]);
 
-})(angular.module("TodosApp", []));
+})(angular.module("TodosApp", ["ngMessages"]));
