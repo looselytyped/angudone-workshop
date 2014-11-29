@@ -45,7 +45,17 @@
               </h3>
           </li>
         </ul>
-        {{ todosCtrl.todos | json }}
+        <form name="newTodoForm" novalidate>
+          <input type="text"
+                 ng-model="todosCtrl.newTodo.text"
+                 name="todoText"
+                 required
+                 placeholder="I want to ..." />
+          <button ng-click="todosCtrl.addNewTodo(todosCtrl.newTodo)"
+                  ng-disabled="newTodoForm.$invalid">
+            Add
+          </button>
+        </form>
       </div>
     </div>
   </div>
