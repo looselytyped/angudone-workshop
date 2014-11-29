@@ -185,3 +185,29 @@ If you know your way around Git then you can `git-checkout` individual commits t
 
     That is not to say that `$scope` has no value anymore -- `$scope` allows for many other functions such as `$broadcast`, `$apply` and `$digest`, and if you need those you can still inject `$scope` like we currently do. 
 
+6. **Define out `todos` array** @exercise
+
+        var app = angular.module("todosApp", []);
+
+        app.controller("TodosCtrl", [
+            "$scope",
+            function(scope) {
+              var vm = this,
+                  index = 0,
+                  todos = [
+                    { id: ++index, text: "Learn Angular" },
+                    { id: ++index, text: "Speak About it" },
+                    { id: ++index, text: "Profit!!" }
+                  ];
+
+              vm.todos = todos;
+            }]);
+
+    We initialize an array of todos, and tack it on as a property called `todos` on the controller.
+
+    We evaluate the same in the view using the evaluation (`{{ }}`) directive
+
+        <div ng-controller="TodosCtrl as todosCtrl">
+            <h3>{{ todosCtrl.todos }}</h3>
+        </div>
+    
