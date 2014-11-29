@@ -70,3 +70,23 @@ If you know your way around Git then you can `git-checkout` individual commits t
 
     **Be sure to remove this `script` tag, and restore `ng-app="myApp"` to just `ng-app` after this experiment**
 
+5. **Use `ng-model`** @exercise
+
+    - Provides a backing model for input/checkbox/select on the current scope
+    - Automatic two way binding between view and model
+
+    To use `ng-model` simply bind it to an input type of `text`, `checkbox` etc like so
+
+        <input type="text" ng-model="textModel"/>
+        <h4>This is the text box value {{ textModel }}</h4>
+        <input type="checkbox" ng-model="checkboxModel"/>
+        <h4>This is the checkbox value {{ checkboxModel }}</h4>
+        <select
+          ng-model="selectModel"
+          ng-options="t for t in ['Fix Me', 'To Do', 'Bug']"
+        ></select>
+        <h4>You selected {{ selectModel }}</h4>
+
+
+    Bear in mind that all these `ng-models` are being attached to the `$rootScope`, that is they are globally accessible!
+
