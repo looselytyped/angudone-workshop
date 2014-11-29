@@ -12,7 +12,7 @@
   <script src="js/bootstrap.js"></script>
   <script src="js/main.js"></script>
 </head>
-<body ng-app>
+<body ng-app="TodosApp">
   <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="container">
       <div class="navbar-header">
@@ -34,14 +34,9 @@
   <div class="container">
     <div class="starter-template">
       <h1>Angudone</h1>
-      <input type="text" ng-model="textModel"/>
-      <h4>This is the text box value {{ textModel }}</h4>
-      <input type="checkbox" ng-model="checkboxModel"/>
-      <h4>This is the checkbox value {{ checkboxModel }}</h4>
-      <select ng-model="selectModel"
-              ng-options="t for t in ['Fix Me', 'To Do', 'Bug']">
-      </select>
-      <h4>You selected {{ selectModel }}</h4>
+      <div ng-controller="TodosCtrl as todosCtrl">
+        <h3>{{ todosCtrl.description }}</h3>
+      </div>
     </div>
   </div>
 </body>
