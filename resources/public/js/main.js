@@ -20,7 +20,12 @@
         } else {
           delete todo.done;
         }
-      }
+      };
+
+      vm.addNewTodo = function(newTodo) {
+        todos.push({ id: ++index, text: newTodo.text });
+        newTodo.text = '';
+      };
     }]);
 
 })(angular.module("TodosApp", []));
