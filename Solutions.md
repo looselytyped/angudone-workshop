@@ -272,3 +272,33 @@ If you know your way around Git then you can `git-checkout` individual commits t
                 delete todo.done;
             }
         };
+
+8. **Use a form to add new todos to the list with validation** @exercise
+
+    We use a regular HTML `form` to allow the user to add a new todo to the `todos` array. 
+
+    One thing that proves very useful is to name the form so that we can get to it later (like so `form name="addTodo"`). Since we will be doing the validation for our form we can prevent the default behaviour of modern browsers that attempt to block submission of a an invalid form via `novalidate`. We also mandate that the text be filled in via the HTML5 `required` attribute.
+
+    On the `button` we use `ng-click` that will invoke a function on the controller passing in the `ng-model` of the `input`. We _also_ disable the button if the form is "invalid" (via `ng-disabled` along with `addTodo.$invalid`).
+
+        <form name="newTodoForm" novalidate>
+          <input type="text"
+                 ng-model="todosCtrl.newTodo.text"
+                 name="todoText"
+                 required
+                 placeholder="I want to ..." />
+          <button ng-click="todosCtrl.addNewTodo(todosCtrl.newTodo)"
+                  ng-disabled="newTodoForm.$invalid">
+            Add
+          </button>
+        </form>
+
+    On the controller end we have to add a new function on the controller that will receive the backing model of the `input` field, extract the `text` property to create a new todo that will get `push`ed on the `todos` array.
+
+          vm.addNewTodo = function(newTodo) {
+            todos.push({ id: ++index, text: newTodo.text });
+            newTodo.text = '';
+          };
+
+    Note that we reset the `text` property on the supplied `newTodo` object to `''` - this will erase the text on the `input` on a succesful submission. 
+
