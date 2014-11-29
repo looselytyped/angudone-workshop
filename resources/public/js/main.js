@@ -13,6 +13,14 @@
           ];
 
       vm.todos = todos;
+
+      vm.markDone = function(checked, todo) {
+        if(checked) {
+          todo.done = new Date().getTime();
+        } else {
+          delete todo.done;
+        }
+      }
     }]);
 
 })(angular.module("TodosApp", []));

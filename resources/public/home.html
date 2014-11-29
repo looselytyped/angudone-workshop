@@ -37,9 +37,15 @@
       <div ng-controller="TodosCtrl as todosCtrl">
         <ul class="list-unstyled">
           <li ng-repeat="t in todosCtrl.todos track by t.id">
-            <h3>{{ t.text }}</h3>
+            <h3>
+              <input type="checkbox" ng-model="checked"
+                                     ng-change="todosCtrl.markDone(checked, t)"
+                                     ng-checked="t.done">
+              {{ t.text }}
+              </h3>
           </li>
         </ul>
+        {{ todosCtrl.todos | json }}
       </div>
     </div>
   </div>
