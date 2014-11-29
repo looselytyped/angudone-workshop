@@ -34,10 +34,14 @@
   <div class="container">
     <div class="starter-template">
       <h1>Angudone</h1>
-      <span ng-init="num = 30"></span>
-      <h4>The num is {{ num }}</h4>
-      <span ng-init="arr = 'angular is awesome'.split()"></span>
-      <h4>The array is {{ arr }}</h4>
+      <input type="text" ng-model="textModel"/>
+      <h4>This is the text box value {{ textModel }}</h4>
+      <input type="checkbox" ng-model="checkboxModel"/>
+      <h4>This is the checkbox value {{ checkboxModel }}</h4>
+      <select ng-model="selectModel"
+              ng-options="t for t in ['Fix Me', 'To Do', 'Bug']">
+      </select>
+      <h4>You selected {{ selectModel }}</h4>
     </div>
   </div>
 </body>
