@@ -29,3 +29,44 @@ If you know your way around Git then you can `git-checkout` individual commits t
 
     Angular is a directives based framework and you, as an Angular developer will be not only make heavy use of provided directives, but will eventually be writing your own directives.
 
+3. **Use `Use ng-init` and `{{ }}`** @exercise
+
+    You can use `ng-init` to initialize the value of a variable like so (and use the `{{ }}` to evaluate a variable in the current scope)
+
+        <span ng-init="num = 30"></span>
+        <h4>The num is {{ num }}</h4>
+        <span ng-init="arr = 'angular is awesome'.split()"></span>
+        <h4>The array is {{ arr }}</h4>
+
+    Note that we can write JavaScript specific code within an `ng-init`. There are some exceptions to this rule, for example you **cannot** do conditionals (like `if`).
+
+    The evaluation directive can be used for String interpolation like we see in the example.
+
+4. **Understand the $rootScope** @discussion
+
+    Angular creates a global scope object called `$rootScope` when you bootstrap your application via `ng-app`. This is the grand-daddy of all scopes within an Angular application. If you were to `ng-init` a variable like `num` that we say in the earlier example it is put on the `$rootScope`. You can see what the `$rootScope` looks like by a simple hack (**NOTE:** Do not do this in your production code)
+
+        <script>
+            var myapp = angular.module("myApp", []);
+            myapp.run(function($rootScope) {
+               window.root = $rootScope;
+            });
+        </script>
+
+    To run this hack we will need to change our `hg-app` usage briefly to look like `ng-app="myApp"`. Now if you were to go to the `Console` in Firebug or Chrome's Console in the Inspector and evaluate `root` you will see that it has `num` and `arr` on it. The following snippet is from FireBug's Console
+
+        >>> root
+        Scope { $id="002", $$watchers=[2], $root=Scope, more...}
+        >>> root.num
+        30
+        >>> root.arr
+        ["angular is awesome"]
+
+    Remember that this only works if you initialized variables **outside** of any controller. Since we don't have any controllers yet any variable that gets introduced via `ng-init`, or `ng-model` gets tacked on to this global object.
+
+    In other words, doing `<span ng-init="num = 30"></span>` amounts to doing `$rootScope.num = 30` -- That is `num` is now a property on the global `$rootScope` object, thus also making it universally accessible from anywhere within the Angular application
+
+    Needless to say, global variables are a bad idea :)
+
+    **Be sure to remove this `script` tag, and restore `ng-app="myApp"` to just `ng-app` after this experiment**
+

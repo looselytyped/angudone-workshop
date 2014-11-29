@@ -34,9 +34,10 @@
   <div class="container">
     <div class="starter-template">
       <h1>Angudone</h1>
-      <div class="lead">
-        Just making sure all is well - {{ 2 + 3 }}
-      </div>
+      <span ng-init="num = 30"></span>
+      <h4>The num is {{ num }}</h4>
+      <span ng-init="arr = 'angular is awesome'.split()"></span>
+      <h4>The array is {{ arr }}</h4>
     </div>
   </div>
 </body>
