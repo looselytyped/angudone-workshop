@@ -388,4 +388,32 @@ If you know your way around Git then you can `git-checkout` individual commits t
             <span class="badge">Matches {{ results.length }} of {{ todosCtrl.todos.length }}</span>
         </div>
 
-    
+11. **Define your own filter** @exercise
+
+    Angular offers a way to define custom filters, and the API is very similar to the one we use to define controllers in Angular. 
+
+        app.filter("dated", [
+            function() {
+                return function(text) {
+                    if(text.endsWith("#starred")) {
+                        var index = text.indexOf("#");
+                        return [text.substring(0, index), " important!!"].join('')
+                    }
+                    return text;
+                }
+            }]);
+
+    Here we are defining a filter called "dated". Note that we use the same `[]` as the second argument like we do in our controller definitions. If there are any dependencies that this filter needs then we can inject them into our filter factory function. 
+
+    Our filter is itself a function which takes one argument -- the text to transform and returns the transformed text. 
+
+    We can use it in out view like so 
+
+        <li ng-repeat="t in (todosCtrl.todos | filter:todosCtrl.searchText) as results track by t.id">
+            <h3>
+                <input type="checkbox" ng-model="checked"
+                                     ng-change="todosCtrl.markDone(checked, t)"
+                                     ng-checked="t.done">
+                {{ t.text | dated }}
+              </h3>
+        </li>

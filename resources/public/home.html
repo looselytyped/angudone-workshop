@@ -46,7 +46,7 @@
               <input type="checkbox" ng-model="checked"
                                      ng-change="todosCtrl.markDone(checked, t)"
                                      ng-checked="t.done">
-              {{ t.text }}
+              {{ t.text | dated }}
               </h3>
           </li>
         </ul>

@@ -32,4 +32,15 @@
       };
     }]);
 
+  app.filter("dated", [
+    function() {
+      return function(text) {
+        if(text.endsWith("#starred")) {
+          var index = text.indexOf("#");
+          return [text.substring(0, index), " important!!"].join('')
+        }
+        return text;
+      }
+    }
+  ]);
 })(angular.module("TodosApp", ["ngMessages"]));
