@@ -417,3 +417,80 @@ If you know your way around Git then you can `git-checkout` individual commits t
                 {{ t.text | dated }}
               </h3>
         </li>
+
+12. **Factories (and services)** @discussion
+
+    In a well designed (and implemented) Angular application, our domain logic should **never** reside _inside_ a controller. The role of the controller is to set up "scoped" properties that are made available to the view. If you look at the current implementation of our controller you see that it not only holds the "model" (a list of todos) but it also knows how to manipulate todos, and the list of todos. 
+
+    So if domain logic should not live in the controller, then where should it go? The answer is factories (or services). 
+
+    Factories in Angular are **singleton** objects that play the role of domain model facilitator. We should design them so that they encapsulate within them all the logic needed to "CRUD" our domain (if that is a traditional web application), or for that matter do anything with the domain. 
+
+    Like `$scope`, and `$http` these factories can be injected anywhere, including our controllers -- so that when the view needs to interact with the domain it does so via the controller. 
+    
+    Creating a factory has an API very similar to that of controllers and filters.
+
+        app.factory("SomeService", [
+          // list of dependencies here
+          function() {
+            // return the factory object
+            return {
+              getTodos: function() { //return list of todos }
+              // potentially other methods here
+            };
+          }
+          ]);
+
+    We return an object that has one method in this case -- `getTodos` which somehow knows how to get the todos -- be that a static array of todos, or an AJAX call to the server. 
+
+    We can use the same in the controller like so -- 
+
+          app.controller("TodosCtrl", [
+            "$scope", "SomeService",
+            function(scope, someSvc) {
+              // invoke someSvc.getTodos() when you need 'em
+            }])
+
+    Allow me to repeat that factories in Angular *are SINGLETONS*! That is, once Angular invokes the factory function in `app.factory` and gets a reference to the object that was returned, it will *NEVER* invoke that function again. 
+
+    Services are identical to factories except you create them with the `angular.module.service` method and the only thing that separates them from factories is _how_ the "instantiation" function is invoked (for a service it is invoked with a `new` -- in that it is treated as a constructor function instead of a regular function invocation).
+
+
+13. **Create a custom `TodoService` and extract away "model logic" from `TodosCtrl`** @exercise
+    
+    
+    We first define our `TodoService` and then extract out all the business logic from our controller here (*Note* that I am only showing an excerpt here)
+
+         app.factory("TodoService", [
+          function() {
+            var index = 0,
+                todos = [
+                  { id: ++index, text: "Learn Angular" },
+                  { id: ++index, text: "Speak About it" },
+                  { id: ++index, text: "Profit!!" }
+                ];
+
+            function addNewTodo(newTodoText) {
+              todos.push({ id: ++index, text: newTodoText });
+            }
+
+            return {
+              getTodos: function() { return todos; },
+              addNewTodo: addNewTodo
+            }
+          }]);
+
+    Then we inject the `TodoService` into the controller just like any other dependency, and use it! 
+
+          app.controller("TodosCtrl", [
+            "$scope", "TodoService",
+            function(scope, todoSvc) {
+              var vm = this;
+              vm.todos = todoSvc.getTodos();
+
+              vm.addNewTodo = function(newTodo) {
+                todoSvc.addNewTodo(newTodo.text);
+                newTodo.text = '';
+            };
+            
+            }]);
