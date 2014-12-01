@@ -338,3 +338,54 @@ If you know your way around Git then you can `git-checkout` individual commits t
     The `ng-messages` tag asks which `$error` object to look at -- in this case we want the `newTodoForm.todoText.$error` . `ng-messages` simply "switch cases" over the `$error` object and finds the matching `ng-message` and picks the `span` tag that matches that error! It is that `span` tag that is then displayed to the user. 
 
     Note that we also use `newTodoForm.$dirty` and `newTodoForm.$invalid` to ensure that we are not being too aggressive in displaying errors to the user. 
+
+9. **Filters in AngularJS** @discussion
+
+    Filters in Angular are analogous to filters in Unix. Consider `ls -al | grep *.txt | less` - here the filters `grep` and `less` are "piped" - data flows from left to right and each filter either "reduces" or "transforms" the data in some way. That is, although this is commonly referred to as "pipes and filters" the filters are not _always_ filtering (or reducing) -- in this case `less` transforms the data into a paged view in the terminal. 
+
+    Filters in Angular work similarly. Data flows to a filter, and the filter (depending on its definition) may drop certain items that do not match a certain criteria, or it may "transform" it, for e.g. it might change the text to be all uppercase. 
+
+    Let us consider the easier of the two that is "transformation". Let us say we have some text in a property called `todoText` and we are evaluating it in the view using `{{ todoTex }}`. If we wanted to uppercase the text we could use one of Angulars built-in filter, appropriately named `uppercase`. And we use it like so `{{ todoTex | uppercase }}`. That's it! Notice that Angular uses the pipe (`|`) character. If you were displaying dollar amounts and wanted to format it you could another one of Angulars built in filters like so `{{amount | currency:"USD$"}}` -- The `currency` filter takes a `String` currency symbol as an argument. 
+
+    The other kind of filter is the "reducing" kind, and this is usually useful when you have a collection of objects and you wish to filter the collection in some way. The ideal place to use this filter would be `ng-repeat`, where you want to "restrict" the items that get "repeated" over. Consider the following  
+
+        <ul>
+            <li ng-repeat="n in ['venkat', 'michelle', 'matt'] | filter:'venkat'">
+                {{ n }}
+            </li>
+        </ul>
+
+    Notice the `| filter:'venkat'` ? Just like the `currency` filter expects a currency symbol as an argument, this filter (confusingly named `filter`) expects an argument. The way you read the `ng-repeat` now is like so - take `['venkat', 'michelle', 'matt']` and `filter` items that match 'venkat' - in this case there is only one match so you will see only one list item. What if we did `filter:'m'`? Well there are 2 names that will match, so you will see 2 list items show up.
+
+    We can make this more generic like so 
+
+        <input type="text" ng-model="nameSearch">
+        <ul>
+            <li ng-repeat="n in ['venkat', 'michelle', 'matt'] | filter:nameSearch">
+              {{ n }}
+            </li>
+        </ul>
+
+    Now we have an input box whose `ng-model` is the argument we are passing to `filter` -- so now the user can type in any value, and the filter will get restricted by _that_ name. 
+
+10. **Use `filter` so that the user can search their todos** @exercise
+
+    We start by creating an input box with an `ng-model` to hold on to what the user is searching for. We then restrict `ng-repeat` using that value 
+
+        <input type="text" ng-model="todosCtrl.searchText" />
+
+    We then "filter" our repeater to restrict the array by that criteria - 
+
+        <li ng-repeat="t in (todosCtrl.todos | filter:todosCtrl.searchText) as results track by t.id">
+            <!-- ... -->
+        </li>
+
+    Notice that putting the parentheses makes things a lot clearer - First `filter` `todosCtrl.todos` based on this criteria, and then for every `t` in the `results` create a new `li`.
+
+    Stuffing the "resultant" array in `results` using the `as` syntax proves valuable if you would like to know "how many passed the test?". We can use that to display to the user the number of "matched" items, like so 
+
+        <div ng-show="todosCtrl.searchText">
+            <span class="badge">Matches {{ results.length }} of {{ todosCtrl.todos.length }}</span>
+        </div>
+
+    
