@@ -10,6 +10,7 @@
   <script src="js/angular.js"></script>
   <script src="js/jquery.js"></script>
   <script src="js/angular-messages.js"></script>
+  <script src="js/angular-route.js"></script>
   <script src="js/bootstrap.js"></script>
   <script src="js/main.js"></script>
 </head>
@@ -35,37 +36,7 @@
   <div class="container">
     <div class="starter-template">
       <h1>Angudone</h1>
-      <div ng-controller="TodosCtrl as todosCtrl">
-        <input type="text" ng-model="todosCtrl.searchText.text" />
-        <div ng-show="todosCtrl.searchText.text">
-          <span class="badge">Matches {{ results.length }} of {{ todosCtrl.todos.length }}</span>
-        </div>
-        <ul class="list-unstyled">
-          <li ng-repeat="t in (todosCtrl.todos | filter:todosCtrl.searchText) as results track by t.id">
-            <h3>
-              <input type="checkbox" ng-model="checked"
-                                     ng-change="todosCtrl.markDone(checked, t)"
-                                     ng-checked="t.done">
-              {{ t.text | dated }}
-              </h3>
-          </li>
-        </ul>
-        <form name="newTodoForm" novalidate>
-          <input type="text"
-                 ng-model="todosCtrl.newTodo.text"
-                 name="todoText"
-                 required
-                 placeholder="I want to ..." />
-          <button ng-click="todosCtrl.addNewTodo(todosCtrl.newTodo);todosCtrl.resetForm(newTodoForm)"
-                  ng-disabled="newTodoForm.$invalid">
-            Add
-          </button>
-        </form>
-        <div ng-messages="newTodoForm.todoText.$error" ng-show="newTodoForm.$dirty && newTodoForm.$invalid">
-          <span ng-message="required">is required</span>
-        </div>
-
-      </div>
+      <ng-view></ng-view>
     </div>
   </div>
 </body>
