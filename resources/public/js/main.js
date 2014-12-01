@@ -21,13 +21,11 @@
     }]);
 
   app.factory("TodoService", [
-    function() {
-      var index = 0,
-      todos = [
-        { id: ++index, text: "Learn Angular" },
-        { id: ++index, text: "Speak About it" },
-        { id: ++index, text: "Profit!!" }
-      ];
+    "$http", "$q",
+    function($http, $q) {
+      function getTodos() {
+        return $http.get("/todos").then(handleSuccess, handleError);
+      }
 
       function markDone(checked, todo) {
         if(checked) {
@@ -35,16 +33,36 @@
         } else {
           delete todo.done;
         }
+        return $http.put("/todos/"+todo.id, todo)
+                    .then(handleSuccess, handleError);
       }
 
       function addNewTodo(newTodoText) {
-        todos.push({ id: ++index, text: newTodoText });
+        return $http.post("/todos", { text: newTodoText })
+                    .then(handleSuccess, handleError);
+      }
+
+      function deleteTodo(id) {
+        return $http.delete("/todos/"+id)
+                    .then(handleSuccess, handleError);
+      }
+
+      function handleSuccess(response) {
+        return response.data;
+      }
+
+      function handleError(response) {
+        if (!angular.isObject(response.data) && !response.data) {
+          return($q.reject("An unknown error occurred."));
+        }
+        return($q.reject(response.data));
       }
 
       return {
-        getTodos: function() { return todos; },
+        getTodos: getTodos,
         markDone: markDone,
-        addNewTodo: addNewTodo
+        addNewTodo: addNewTodo,
+        deleteTodo: deleteTodo
       }
     }]);
 
@@ -53,21 +71,34 @@
     "$scope", "TodoService",
     function(scope, todoSvc) {
       var vm = this;
+      function refresh() {
+        todoSvc.getTodos().then(function(data) {
+          vm.todos = data;
+        }, displayError);
+      }
 
-      vm.todos = todoSvc.getTodos();
+      refresh();
 
       vm.markDone = function(checked, todo) {
-        todoSvc.markDone(checked, todo);
+        todoSvc.markDone(checked, todo).then(refresh, displayError);
       };
 
       vm.addNewTodo = function(newTodo) {
-        todoSvc.addNewTodo(newTodo.text);
+        todoSvc.addNewTodo(newTodo.text).then(refresh, displayError);
         newTodo.text = '';
       };
+
+      vm.deleteTodo = function(todo) {
+        todoSvc.deleteTodo(todo.id).then(refresh, displayError);
+      }
 
       vm.resetForm = function(form) {
         form.$setPristine();
       };
+
+      function displayError(msg) {
+        vm.errorMsg = msg;
+      }
     }]);
 
   app.controller("EditTodosCtrl", [
