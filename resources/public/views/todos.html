@@ -1,6 +1,11 @@
 <div>
-  <input type="text" ng-model="todosCtrl.searchText" />
-  <div ng-show="todosCtrl.searchText">
+  <div class="alert alert-danger" role="alert" ng-if="todosCtrl.errorMsg">
+    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+    <span class="sr-only">Error:</span>
+    {{ todosCtrl.errorMsg }}
+  </div>
+  <input type="text" ng-model="todosCtrl.searchText.text" />
+  <div ng-show="todosCtrl.searchText.text">
     <span class="badge">Matches {{ results.length }} of {{ todosCtrl.todos.length }}</span>
   </div>
   <ul class="list-unstyled">
@@ -10,6 +15,16 @@
         ng-change="todosCtrl.markDone(checked, t)"
         ng-checked="t.done">
         {{ t.text | dated }}
+        <small>
+          <a ng-href="#/todos/{{t.id}}">
+            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+          </a>
+        </small>
+        <small>
+          <a href="" ng-click="todosCtrl.deleteTodo(t)">
+            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+          </a>
+        </small>
       </h3>
     </li>
   </ul>
@@ -19,13 +34,11 @@
     name="todoText"
     required
     placeholder="I want to ..." />
-    <button ng-click="todosCtrl.addNewTodo(todosCtrl.newTodo);todosCtrl.resetForm(newTodoForm)"
-    ng-disabled="newTodoForm.$invalid">
-    Add
-  </button>
-</form>
-<div ng-messages="newTodoForm.todoText.$error" ng-show="newTodoForm.$dirty && newTodoForm.$invalid">
-  <span ng-message="required">is required</span>
-</div>
-{{ todosCtrl.todos | json }}
+    <button ng-click="todosCtrl.addNewTodo(todosCtrl.newTodo);todosCtrl.resetForm(newTodoForm)" ng-disabled="newTodoForm.$invalid">
+      Add
+    </button>
+  </form>
+  <div ng-messages="newTodoForm.todoText.$error" ng-show="newTodoForm.$dirty && newTodoForm.$invalid">
+    <span ng-message="required">is required</span>
+  </div>
 </div>
