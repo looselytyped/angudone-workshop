@@ -36,8 +36,12 @@
     <div class="starter-template">
       <h1>Angudone</h1>
       <div ng-controller="TodosCtrl as todosCtrl">
+        <input type="text" ng-model="todosCtrl.searchText.text" />
+        <div ng-show="todosCtrl.searchText.text">
+          <span class="badge">Matches {{ results.length }} of {{ todosCtrl.todos.length }}</span>
+        </div>
         <ul class="list-unstyled">
-          <li ng-repeat="t in todosCtrl.todos track by t.id">
+          <li ng-repeat="t in (todosCtrl.todos | filter:todosCtrl.searchText) as results track by t.id">
             <h3>
               <input type="checkbox" ng-model="checked"
                                      ng-change="todosCtrl.markDone(checked, t)"
