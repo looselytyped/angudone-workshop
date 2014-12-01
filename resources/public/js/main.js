@@ -1,29 +1,49 @@
 "use strict";
 
 ;(function(app) {
-  app.controller("TodosCtrl", [
-    "$scope",
-    function(scope) {
-      var vm = this,
-          index = 0,
-          todos = [
-            { id: ++index, text: "Learn Angular" },
-            { id: ++index, text: "Speak About it" },
-            { id: ++index, text: "Profit!!" }
-          ];
 
-      vm.todos = todos;
+  app.factory("TodoService", [
+    function() {
+      var index = 0,
+      todos = [
+        { id: ++index, text: "Learn Angular" },
+        { id: ++index, text: "Speak About it" },
+        { id: ++index, text: "Profit!!" }
+      ];
 
-      vm.markDone = function(checked, todo) {
+      function markDone(checked, todo) {
         if(checked) {
           todo.done = new Date().getTime();
         } else {
           delete todo.done;
         }
+      }
+
+      function addNewTodo(newTodoText) {
+        todos.push({ id: ++index, text: newTodoText });
+      }
+
+      return {
+        getTodos: function() { return todos; },
+        markDone: markDone,
+        addNewTodo: addNewTodo
+      }
+    }]);
+
+
+  app.controller("TodosCtrl", [
+    "$scope", "TodoService",
+    function(scope, todoSvc) {
+      var vm = this;
+
+      vm.todos = todoSvc.getTodos();
+
+      vm.markDone = function(checked, todo) {
+        todoSvc.markDone(checked, todo);
       };
 
       vm.addNewTodo = function(newTodo) {
-        todos.push({ id: ++index, text: newTodo.text });
+        todoSvc.addNewTodo(newTodo.text);
         newTodo.text = '';
       };
 
@@ -41,6 +61,5 @@
         }
         return text;
       }
-    }
-  ]);
+    }]);
 })(angular.module("TodosApp", ["ngMessages"]));
