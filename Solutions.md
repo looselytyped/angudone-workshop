@@ -494,3 +494,71 @@ If you know your way around Git then you can `git-checkout` individual commits t
             };
             
             }]);
+
+13. **Define custom routes and necessary views for our application** @exercise
+
+    Every single page application has the notion of "views" and "routes". 
+    Just like in a traditional web application a user goes from one "state" to another, a user can transition from one state of a single page app to another. 
+
+    A route in Angular ties a URL to a "view template" (you can think of this as an HTML fragment) and potentially a controller. 
+
+    To introduce routing in our application we first need to include `ng-route.js` in our HTML like so 
+
+        <script src="js/angular-route.js"></script>
+    
+    We then have to require it as a dependency to our application just like we did with `ngMessages`
+
+        angular.module("TodosApp", ["ngMessages", "ngRoute"]
+
+    `ngRoute` provides us with the capability to "configure" our application routes using the `$routeProvider`. 
+    The `$routeProvider` has only 2 methods on it - `when` and `otherwise` and these are sufficient for us to declare our routes, and attach the "view templates" to individual routes. 
+
+    Perhaps this is best seen with our implementation
+
+          app.config([
+            "$routeProvider",
+            function(routeProvider) {
+              routeProvider
+                .when("/todos", {
+                  templateUrl: "views/todos.html",
+                  controller: "TodosCtrl",
+                  controllerAs: "todosCtrl"
+                })
+                .when("/todos/:id", {
+                  templateUrl: "views/editTodos.html",
+                  controller: "EditTodosCtrl",
+                })
+                .otherwise({
+                  redirectTo: "/todos"
+                })
+            }]);
+
+    As you can see we have 2 routes - `/todos` and `/todos/:id` - each one has a `templateUrl` - this is the file that holds the "html fragment" that constitutes that view. 
+    We can also _optionally_ define the `controller` that is attached to the view (and consequently we can drop the `ng-controller` directive in the view).
+
+
+    Note that we can signifier route params using `:id` which we can later access - for e.g. if the URL were to be `/todos/#/1` then `:id` would be 1.
+
+    Now that we have our routes set up we need to tell the view which portion of the `home.html` will be rendered by a particular template. 
+    We start by extracting **all** the code within our `ng-controller` into a file called `todos.html` under the `views` directory (This is because our routing configuration tells the routing engine that it should go looking for the view under `views/todos.html`). 
+    We replace that tag with simply `<ng-view></ng-view>`.
+
+
+        <div class="starter-template">
+            <h1>Angudone</h1>
+            <ng-view></ng-view>
+        </div>
+    
+    Our `views/todos.html` file now contains all the code that we had within the `ng-controller="TodosCtrl as todosCtrl` tag - **Note** that we don't need the `ng-controller` declaration anymore since the `$routeProvider` defines the both the `controller` and the `controllerAs` for that view. 
+
+
+    To see all this in work we now need to serve up our pages using a server.
+    Switch to the terminal and `cd` into the directory where you cloned this repository. 
+    Then simply run `lein ring server`. 
+    This should (eventually) open a new tab in your browser to `http://localhost:3000/#/todos`. 
+    If all is well you should see no difference in the view. 
+
+    Just so nothing else breaks we need to introduce the `EditTodosCtrl` in `main.js`, and create a `views/editTodos.html` file (You can put some dummy code in there like `<h3>Here we edit a Todo</h3>`). 
+    Now if you were to change the URL in your browser to say `http://localhost:3000/#/todos/1` you will see the dummy code displayed in your browser. 
+
+    
