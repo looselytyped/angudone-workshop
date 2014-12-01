@@ -1,0 +1,31 @@
+<div>
+  <input type="text" ng-model="todosCtrl.searchText" />
+  <div ng-show="todosCtrl.searchText">
+    <span class="badge">Matches {{ results.length }} of {{ todosCtrl.todos.length }}</span>
+  </div>
+  <ul class="list-unstyled">
+    <li ng-repeat="t in (todosCtrl.todos | filter:todosCtrl.searchText) as results track by t.id">
+      <h3>
+        <input type="checkbox" ng-model="checked"
+        ng-change="todosCtrl.markDone(checked, t)"
+        ng-checked="t.done">
+        {{ t.text | dated }}
+      </h3>
+    </li>
+  </ul>
+  <form name="newTodoForm" novalidate>
+    <input type="text"
+    ng-model="todosCtrl.newTodo.text"
+    name="todoText"
+    required
+    placeholder="I want to ..." />
+    <button ng-click="todosCtrl.addNewTodo(todosCtrl.newTodo);todosCtrl.resetForm(newTodoForm)"
+    ng-disabled="newTodoForm.$invalid">
+    Add
+  </button>
+</form>
+<div ng-messages="newTodoForm.todoText.$error" ng-show="newTodoForm.$dirty && newTodoForm.$invalid">
+  <span ng-message="required">is required</span>
+</div>
+{{ todosCtrl.todos | json }}
+</div>

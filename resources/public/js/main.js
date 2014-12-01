@@ -2,6 +2,24 @@
 
 ;(function(app) {
 
+  app.config([
+    "$routeProvider",
+    function(routeProvider) {
+      routeProvider
+        .when("/todos", {
+          templateUrl: "views/todos.html",
+          controller: "TodosCtrl",
+          controllerAs: "todosCtrl"
+        })
+        .when("/todos/:id", {
+          templateUrl: "views/editTodos.html",
+          controller: "EditTodosCtrl",
+        })
+        .otherwise({
+          redirectTo: "/todos"
+        })
+    }]);
+
   app.factory("TodoService", [
     function() {
       var index = 0,
@@ -52,6 +70,11 @@
       };
     }]);
 
+  app.controller("EditTodosCtrl", [
+    "$scope", "TodoService",
+    function(scope, todoSvc) {
+    }]);
+
   app.filter("dated", [
     function() {
       return function(text) {
@@ -62,4 +85,4 @@
         return text;
       }
     }]);
-})(angular.module("TodosApp", ["ngMessages"]));
+})(angular.module("TodosApp", ["ngMessages", "ngRoute"]));
