@@ -1,1 +1,19 @@
-<h3>Here we edit a Todo</h3>
+<div class="lead">
+  <div class="alert alert-danger" role="alert" ng-if="editCtrl.errorMsg">
+    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+    <span class="sr-only">Error:</span>
+    {{ editCtrl.errorMsg }}
+  </div>
+  <form name="editTodo">
+    <input
+      type="text"
+      ng-model="editCtrl.todo.text"
+      required
+      placeholder="I want to ... "/>
+    <button
+      ng-disabled="editTodo.$invalid"
+      ng-click="editCtrl.editTodo(editCtrl.todo)"
+      >Edit
+    </button>
+  </form>
+</div>

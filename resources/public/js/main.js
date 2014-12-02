@@ -14,6 +14,7 @@
         .when("/todos/:id", {
           templateUrl: "views/editTodos.html",
           controller: "EditTodosCtrl",
+          controllerAs: "editCtrl",
         })
         .otherwise({
           redirectTo: "/todos"
@@ -24,7 +25,12 @@
     "$http", "$q",
     function($http, $q) {
       function getTodos() {
-        return $http.get("/todos").then(handleSuccess, handleError);
+        return $http.get("/todos")
+                    .then(handleSuccess, handleError);
+      }
+
+      function getTodo(id) {
+        return $http.get("/todos/"+id).then(handleSuccess, handleError);
       }
 
       function markDone(checked, todo) {
@@ -47,6 +53,11 @@
                     .then(handleSuccess, handleError);
       }
 
+      function editTodo(todo) {
+        return $http.put("/todos/"+todo.id, todo)
+                    .then(handleSuccess, handleError);
+      }
+
       function handleSuccess(response) {
         return response.data;
       }
@@ -62,7 +73,9 @@
         getTodos: getTodos,
         markDone: markDone,
         addNewTodo: addNewTodo,
-        deleteTodo: deleteTodo
+        deleteTodo: deleteTodo,
+        getTodo: getTodo,
+        editTodo: editTodo
       }
     }]);
 
@@ -102,8 +115,24 @@
     }]);
 
   app.controller("EditTodosCtrl", [
-    "$scope", "TodoService",
-    function(scope, todoSvc) {
+    "$scope", "TodoService", "$routeParams", "$location",
+    function(scope, todoSvc, routeParams, location) {
+      var vm = this;
+
+      (function() {
+        todoSvc.getTodo(routeParams.id).then(function(data) {
+          vm.todo = data;
+        });
+      })()
+
+      this.editTodo = function(todo) {
+        console.log(todo)
+        todoSvc.editTodo(todo).then(function(data) {
+          location.path("/todos");
+        }, function(msg) {
+          vm.errorMsg = msg;
+        });
+      };
     }]);
 
   app.filter("dated", [
