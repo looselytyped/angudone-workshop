@@ -10,4 +10,4 @@ To get these changes
     - If you prefer to keep your changes just make a commit via `git add .` followed by `git commit -m "My changed"`
 - Do a `git fetch` followed by a `git checkout solutions`
 
-If you know your way around Git then you can `git-checkout` individual commits to see the changes in each. If you are not then go to the [commits](https://github.com/looselytyped/angudone-workshop/tree/solution) page and click on the "Browse Code" link next to each change to see what changed
+If you know your way around Git then you can `git-checkout` individual commits to see the changes in each. If you are not then go to the [commits](https://github.com/looselytyped/angudone-workshop/tree/solutions) page and click on the "Browse Code" link next to each change to see what changed
