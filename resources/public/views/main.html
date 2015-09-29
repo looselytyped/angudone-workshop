@@ -1,0 +1,22 @@
+<div class="lead" ng-controller="TodosCtrl as todosCtrl">
+        <ul>
+          <li ng-repeat="t in todosCtrl.todos track by t.id">
+            <h3>
+              <input type="checkbox"
+                     ng-click="todosCtrl.markDone(t)"
+                     ng-checked="t.done">
+              {{ t.text }}
+            </h3>
+          </li>
+        </ul>
+        <form novalidate name="newForm">
+           <input type="text" name="t"
+             ng-model="todosCtrl.obj.someText"
+             required/>
+          <button
+            ng-click="todosCtrl.addNewTodo(todosCtrl.obj, todosCtrl.todos)"
+            ng-disabled="newForm.$invalid">Bla</button>
+        </form>
+        {{ todosCtrl.todos | json }}
+      </div>
+    </div>
